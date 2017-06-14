@@ -64,6 +64,10 @@ body {
      color: rgb(233,50,117);
  }
 
+ .links-container .navbar-link:active {
+     color: rgb(233,50,117);
+     background-color:white;
+ }
 
  }
 
@@ -71,6 +75,10 @@ body {
      margin: 0 auto;
      max-width: 64rem;
  }
+
+ .container.narrow {
+    max-width: 56rem;
+}
 
 
  /* Medium and small screens (640px) */
