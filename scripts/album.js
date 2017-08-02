@@ -201,6 +201,18 @@ var previousSong = function() {
 };
 
 
+     var togglePlayFromPlayerBar = function() {
+          if (currentSoundFile.isPaused()) {
+             $(this).html(pauseButtonTemplate);
+             $playandpause.html(playerBarPauseButton);
+             currentSoundFile.play();
+         } else {
+             $(this).html(playButtonTemplate);
+             $playandpause.html(playerBarPlayButton);
+             currentSoundFile.pause();
+         }
+     };
+
  var updatePlayerBarSong = function() {
 
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
@@ -227,12 +239,15 @@ var previousSong = function() {
 
  var $previousButton = $('.main-controls .previous');
  var $nextButton = $('.main-controls .next');
+ var $playandpause = $('.main-controls .play-pause');
 
 
  $(document).ready(function() {
      setCurrentAlbum(albumPicasso);
      $previousButton.click(previousSong);
      $nextButton.click(nextSong);
+     $playandpause.click(togglePlayFromPlayerBar);
+
 
      var albums = [albumPicasso, albumMarconi, albumAdele];
      var index = 1;
