@@ -30,10 +30,38 @@ var setSong = function(songNumber) {
   };
 
 
+  var setCurrentTimeInPlayerBar = function(currentTime) {
+      var $currentTimeSeekElement = $('.seek-control .current-time');
+      $currentTimeSeekElement.text(currentTime);
+  };
+
+  var setTotalTimeInPlayerBar = function(totalTime) {
+     var $totalTimeSeekElement = $('.seek-control .total-time');
+     $totalTimeSeekElement.text(totalTime);
+  };
 
  var getSongNumberCell = function(number) {
       return $('.song-item-number[data-song-number="' + number + '"]');
  };
+
+
+ var filterTimeCode = function(timeInSeconds) {
+
+    var totalSeconds = Number.parseFloat(timeInSeconds);
+    var wholeSeconds = Math.floor(totalSeconds);
+    var minutes = Math.floor(wholeSeconds / 60);
+
+    var remainingSeconds = wholeSeconds % 60;
+    var output = minutes + ':';
+
+    if (remainingSeconds < 10) {
+        output += '0';
+    }
+
+    output += remainingSeconds;
+
+    return output;
+};
 
 
  var createSongRow = function(songNumber, songName, songLength) {
@@ -41,7 +69,7 @@ var setSong = function(songNumber) {
         '<tr class="album-view-song-item">'
         + '  <td class="song-item-number" data-song-number="' + songNumber + '">' + songNumber + '</td>'
       + '  <td class="song-item-title">' + songName + '</td>'
-      + '  <td class="song-item-duration">' + songLength + '</td>'
+      + '  <td class="song-item-duration">' + filterTimeCode(songLength) + '</td>'
       + '</tr>'
       ;
 
@@ -154,10 +182,14 @@ var setSong = function(songNumber) {
          // #10
          currentSoundFile.bind('timeupdate', function(event) {
              // #11
-             var seekBarFillRatio = this.getTime() / this.getDuration();
+             var currentTime = this.getTime();
+             var songLength = this.getDuration();
+             var seekBarFillRatio = currentTime / songLength;
+
              var $seekBar = $('.seek-control .seek-bar');
 
              updateSeekPercentage($seekBar, seekBarFillRatio);
+             setCurrentTimeInPlayerBar(filterTimeCode(currentTime));
          });
      }
  };
@@ -290,6 +322,19 @@ var previousSong = function() {
     $lastSongNumberCell.html(lastSongNumber);
 };
 
+var togglePlayFromPlayerBar = function() {
+           if (currentSoundFile.isPaused()) {
+              $(this).html(pauseButtonTemplate);
+              $playandpause.html(playerBarPauseButton);
+              currentSoundFile.play();
+          } else {
+              $(this).html(playButtonTemplate);
+              $playandpause.html(playerBarPlayButton);
+              currentSoundFile.pause();
+      }
+  };
+
+
 
  var updatePlayerBarSong = function() {
 
@@ -298,6 +343,8 @@ var previousSong = function() {
     $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + " - " + currentAlbum.artist);
 
     $('.main-controls .play-pause').html(playerBarPauseButton);
+    setTotalTimeInPlayerBar(filterTimeCode(currentSongFromAlbum.duration));
+
 
 };
 
@@ -317,6 +364,7 @@ var previousSong = function() {
 
  var $previousButton = $('.main-controls .previous');
  var $nextButton = $('.main-controls .next');
+ var $playandpause = $('.main-controls .play-pause');
 
 
  $(document).ready(function() {
@@ -324,6 +372,7 @@ var previousSong = function() {
      setupSeekBars();
      $previousButton.click(previousSong);
      $nextButton.click(nextSong);
+     $playandpause.click(togglePlayFromPlayerBar);
 
      var albums = [albumPicasso, albumMarconi, albumAdele];
      var index = 1;
